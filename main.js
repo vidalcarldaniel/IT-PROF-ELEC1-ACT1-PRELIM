@@ -1,12 +1,25 @@
 import axios from 'axios';
 
-const app = document.querySelector('#app');
+// ====== CREATE ROOT CONTAINERS ======
+const app = document.createElement('div');
+app.id = 'app';
+document.body.appendChild(app);
+
+const userFormDiv = document.createElement('div');
+userFormDiv.id = 'userForm';
+document.body.appendChild(userFormDiv);
+
+const usersListDiv = document.createElement('div');
+usersListDiv.id = 'usersList';
+document.body.appendChild(usersListDiv);
+
+// ====== API FETCHES ======
 
 async function fetchMessage() {
   try {
     const response = await axios.get('http://localhost:3000/api/message');
     app.innerHTML = `<h2>${response.data.message}</h2>`;
-  } catch (error) { 
+  } catch (error) {
     app.innerHTML = `<p> Failed to fetch API</p>`;
     console.error(error);
   }
@@ -66,7 +79,56 @@ async function fetchCars() {
   }
 }
 
+async function fetchUsers() {
+  try {
+    const response = await axios.get("http://localhost:3000/api/users");
+    const users = response.data;
+    let usersHtml = "<h3>Users List</h3><ul>";
+    users.forEach(user => {
+      usersHtml += `<li><strong>${user.name}</strong> - ${user.email}</li>`;
+    });
+    usersHtml += "</ul>";
+    usersListDiv.innerHTML = usersHtml;
+  } catch (error) {
+    usersListDiv.innerHTML = "<h3>Error fetching users</h3>";
+    console.error(error);
+  }
+}
+
+// ====== USERS FORM ======
+function renderUserForm() {
+  userFormDiv.innerHTML = `
+    <h3>Add User</h3>
+    <form id="addUserForm">
+      <input type="text" id="name" placeholder="Enter name" required />
+      <input type="email" id="email" placeholder="Enter email" required />
+      <button type="submit">Add User</button>
+    </form>
+    <div id="formMessage"></div>
+  `;
+
+  document.querySelector('#addUserForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.querySelector('#name').value;
+    const email = document.querySelector('#email').value;
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/addUsers", { name, email });
+      document.querySelector('#formMessage').innerHTML = `<p style="color:green;">${response.data.message}</p>`;
+      document.querySelector('#addUserForm').reset();
+      fetchUsers(); // refresh list
+    } catch (error) {
+      console.error(error);
+      document.querySelector('#formMessage').innerHTML = `<p style="color:red;">Failed to add user</p>`;
+    }
+  });
+}
+
+// ====== INITIAL LOAD ======
 fetchMessage();
 fetchStudents();
 fetchTodolist();
 fetchCars();
+renderUserForm();
+fetchUsers();

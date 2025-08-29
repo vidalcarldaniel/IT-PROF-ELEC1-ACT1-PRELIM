@@ -1,4 +1,5 @@
 import axios from 'axios';
+import JSConfetti from 'js-confetti';
 
 // ====== CREATE ROOT CONTAINERS ======
 const app = document.createElement('div');
@@ -13,8 +14,10 @@ const usersListDiv = document.createElement('div');
 usersListDiv.id = 'usersList';
 document.body.appendChild(usersListDiv);
 
-// ====== API FETCHES ======
+// ====== INIT CONFETTI ======
+const jsConfetti = new JSConfetti();
 
+// ====== API FETCHES ======
 async function fetchMessage() {
   try {
     const response = await axios.get('http://localhost:3000/api/message');
@@ -100,14 +103,17 @@ function renderUserForm() {
   userFormDiv.innerHTML = `
     <h3>Add User</h3>
     <form id="addUserForm">
-      <input type="text" id="name" placeholder="Enter name" required />
-      <input type="email" id="email" placeholder="Enter email" required />
-      <button type="submit">Add User</button>
+      <input type="text" id="name" placeholder="Enter name" required/>
+      <input type="email" id="email" placeholder="Enter email" required/>
+      <button id="addUserBtn" type="submit">Add User</button>
     </form>
-    <div id="formMessage"></div>
+    <div id="formMessage" style="text-align: center; margin-top: 2%;"></div>
   `;
 
-  document.querySelector('#addUserForm').addEventListener('submit', async (e) => {
+  const form = document.querySelector('#addUserForm');
+  const formMessage = document.querySelector('#formMessage');
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const name = document.querySelector('#name').value;
@@ -115,12 +121,21 @@ function renderUserForm() {
 
     try {
       const response = await axios.post("http://localhost:3000/api/addUsers", { name, email });
-      document.querySelector('#formMessage').innerHTML = `<p style="color:green;">${response.data.message}</p>`;
-      document.querySelector('#addUserForm').reset();
-      fetchUsers(); // refresh list
+
+      formMessage.innerHTML = `<p style="color:green;">${response.data.message}</p>`;
+      form.reset();
+      fetchUsers();
+
+      // 🎉 Trigger confetti with emojis
+      jsConfetti.addConfetti({
+        emojis: ['🎉', '🙌', '🎊', '🥳', '🎈'],
+        emojiSize: 40,
+        confettiNumber: 50,
+      });
+
     } catch (error) {
       console.error(error);
-      document.querySelector('#formMessage').innerHTML = `<p style="color:red;">Failed to add user</p>`;
+      formMessage.innerHTML = `<p style="color:red;">Failed to add user</p>`;
     }
   });
 }

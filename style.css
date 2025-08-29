@@ -20,6 +20,8 @@ h3 {
   width: 50%;
   margin: 2% auto;
   border-radius: 25px;
+    box-shadow: 3px 3px 4px 0 black;
+
 }
 
 ul {
@@ -43,4 +45,34 @@ li {
   display: flex;
   align-items: center;
   color: gold;
+}
+ 
+form {
+  border: solid 2px gray;
+  padding: 12px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  background-color: goldenrod;
+  padding: 20px;
+  width: 60%;
+  margin: auto;
+  box-shadow: 3px 3px 1px 0 black;
+
+}
+
+form input {
+  width: 40%;
+  padding: 10px;
+  border-radius: 25px;
+  border: solid 2px gray;
+  box-shadow: 3px 5px 1px 0 black;
+}
+
+form button {
+  padding: 20px;
+  color: black;
+  border: solid gray 2px;
+  border-radius: 25px;
+  box-shadow: 3px 5px 1px 0 black;
 }
